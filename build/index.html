@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/index.css">
+    <script src="lib/store2/store2.js"></script>
+    <script src="lib/jquery/jquery.js"></script>
+    <script src="js/index.js"></script>
+</head>
+<body>
+<div class="contanier">
+    <h1>我的TODO</h1>
+    <form class="add_task">
+        <input type="text" id="text" placeholder="请输入">
+        <input type="button" value="commit" class="btn">
+    </form>
+    <ul class="list">
+        <li>
+            <input type="checkbox">
+            <span class="text"></span>
+            <div class="right">
+                <p class="r-delete">删除</p>
+                <p class="r-detail">详细</p>
+            </div>
+        </li>
+    </ul>
+    <div class="det">
+        <div class="title">
+            <h2>啊，欧文</h2>
+            <span class="x">x</span>
+        </div>
+        <div class="del_text"></div>
+        <div class="del_tx">
+            <lable class="tx_title">提醒时间:</lable>
+            <div class="tx_time"></div>
+            <input type="button" class="tx_btn" value="提醒"></input>
+        </div>
+    </div>
+    <div class="del">
+        <h2>确认删除？</h2>
+        <button>确认</button>
+        <button>取消</button>
+    </div>
+</div>
+</body>
+</html>
