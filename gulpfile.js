@@ -85,17 +85,12 @@ gulp.task('serve', ['build'], function() {
         livereload: true,
         port: 58
     });
-
-    open("http://localhost:58/")
-
+    open("http://localhost:58/");
     //监控
     gulp.watch(app.srcPath + '*.html', ['html']);
-    gulp.watch(app.srcPath + 'js/*.js', ['js']);
-    gulp.watch(app.srcPath + 'images/*', ['image']);
-    gulp.watch(app.srcPath + 'css/*.css',['css']);
+/*    gulp.watch(app.srcPath + 'js/!*.js', ['js']);
+    gulp.watch(app.srcPath + 'images/!*', ['image']);
+    gulp.watch(app.srcPath + 'css/!*.css',['css']);*/
 });
-
-
-//默认任务
 
 gulp.task('default', ['serve']);

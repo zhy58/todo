@@ -3,45 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.4/build/jquery.datetimepicker.min.css">
     <link rel="stylesheet" href="css/index.css">
-    <script src="lib/store2/store2.js"></script>
-    <script src="lib/jquery/jquery.js"></script>
-    <script src="js/index.js"></script>
+    <!--<script src="lib/jquery/jquery.js"></script>-->
+    <script src="../build/lib/jquery/jquery.js"></script>
+    <!--<script src="lib/store2/store2.js"></script>-->
+    <script src="../build/lib/store2/store2.js"></script>
+    <!--<script src="../../todo/build/js/index.js"></script>-->
+
 </head>
 <body>
+<div class="msg">
+    <div class="msg_content">title</div>
+    <div class="msg_know">知道了</div>
+</div>
 <div class="contanier">
     <h1>我的TODO</h1>
     <form class="add_task">
         <input type="text" id="text" placeholder="请输入">
-        <input type="button" value="commit" class="btn">
+        <input type="submit" value="commit" class="btn">
     </form>
     <ul class="list">
-        <li>
-            <input type="checkbox">
-            <span class="text"></span>
-            <div class="right">
-                <p class="r-delete">删除</p>
-                <p class="r-detail">详细</p>
-            </div>
-        </li>
+        <!--<li>-->
+            <!--<input type="checkbox">-->
+            <!--<span class="text"></span>-->
+            <!--<div class="right">-->
+                <!--<p class="r-delete">删除</p>-->
+                <!--<p class="r-detail">详细</p>-->
+            <!--</div>-->
+        <!--</li>-->
     </ul>
-    <div class="det">
-        <div class="title">
-            <h2>啊，欧文</h2>
-            <span class="x">x</span>
-        </div>
-        <div class="del_text"></div>
-        <div class="del_tx">
-            <lable class="tx_title">提醒时间:</lable>
-            <div class="tx_time"></div>
-            <input type="button" class="tx_btn" value="提醒"></input>
-        </div>
-    </div>
+    <!--<div class="det">-->
+        <!--<div class="title">-->
+            <!--<h2>啊，欧文</h2>-->
+            <!--<span class="x">x</span>-->
+        <!--</div>-->
+        <!--<div class="del_text"></div>-->
+        <!--<div class="del_tx">-->
+            <!--<lable class="tx_title">提醒时间:</lable>-->
+            <!--<div class="tx_time"></div>-->
+            <!--<input type="button" class="tx_btn" value="提醒"></input>-->
+        <!--</div>-->
+    <!--</div>-->
     <div class="del">
         <h2>确认删除？</h2>
-        <button>确认</button>
-        <button>取消</button>
+        <button class="comf">确认</button>
+        <button class="cann">取消</button>
+    </div>
+    <div>
+        <audio src="music/alert.mp3" id="music"></audio>
     </div>
 </div>
 </body>
 </html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.4/build/jquery.datetimepicker.full.js"></script>
+<script>
+    $(function () {
+        var $commit=$(".btn"),
+                $ul=$(".list");
+        var task_list=[];
+        init();
+        //点击事件
+        $commit.on("click",function (ev) {
+            ev.preventDefault();
+            var obj={};
+
+            obj.content=$("#text").val();
+            //console.log(obj.content);
+            if(obj.content){
+                pull_list(obj);
+                updataList();
+                $("#text").val('');
+            }
+        });
+        //把数据推入task_list
+        function pull_list(obj){
+            task_list.push(obj);
+            store.set("text",task_list);
+        }
+        //初始化到页面
+        function init(){
+            var $checked=$(".checked");
+            task_list=store.get("text")||[];
+            updataList();
+            checked($checked);
+        }
+        //更新数据
+        function updataList(){
+            $ul.html("");
+            var falgArr=[];
+            for(var i=0;i<task_list.length;i++){
+                if(task_list[i].falg){
+                    falgArr[i]=task_list[i];
+                }else {
+                    var str=createLi(i,task_list[i]);
+                    $ul.prepend(str);
+                    $(str).removeClass("checked000");
+                }
+            }
+            for(var j=0;j<falgArr.length;j++){
+                var str01=createLi(j,falgArr[j]);
+                $ul.append(str01);
+                if (!str01)
+                {
+                    $(str01).removeClass("checked000");
+                    continue;
+                }
+                str01.addClass("checked000");
+            }
+
+            var $r_delete=$(".r-delete"),$r_detail=$(".r-detail");
+            delLi($r_delete);
+            detail($r_detail);
+            checked();
+        }
+        //创建List
+        function createLi(index,data){
+            if(!data) return;
+            var str='<li data-index='+index+'>'+
+                    '<input type="checkbox" '+(data.falg?"checked":"")+' class="checked">'+
+                    '<span class="text">'+data.content+'</span>'+
+                    '<div class="right">'+
+                    '<p class="r-delete">删除</p>'+
+                    '<p class="r-detail">详细</p>'+
+                    '</div></li>';
+            return $(str);
+        }
+        //删除事件(加遮罩层)
+        function delLi(obj) {
+            obj.on("click",function () {
+                var index=$(this).parent().parent().data("index");
+                console.log(index);
+                $(".del").show();
+                $(".comf").on("click",function(){
+                    //delete task_list[index];
+                    task_list.splice(index,1);
+                    store.set("text",task_list);
+                    updataList();
+                    $(".del").hide();
+                });
+                $(".cann").on("click",function(){
+                    $(".del").hide();
+                })
+            })
+        }
+        //详细
+        function detail(obj){
+            obj.on("click",function () {
+                var index=$(this).parent().parent().data("index");
+                var str=detail_creat(task_list[index]);
+                $ul.after(str);
+                $(".x,.close").on("click",function(){
+                    $(".det").remove();
+                    $(".close").remove()
+                });
+                up_detail(index);
+                dbClick();
+                datatime();
+                countDown()();
+            })
+        }
+        //新建详细
+        function detail_creat(obj1){
+            str='<div class="close"></div>'+
+                    '<div class="det">'+
+                    '<div class="title">'+
+                    '<h2>'+obj1.content+'</h2>'+
+                    '<input type="text" id="hide">'+
+                    '<span class="x">x</span>'+
+                    '</div>'+
+                    '<textarea class="del_text">'+(obj1.text||"")+'</textarea>'+
+                    '<textarea class="del_text hide_text"></textarea>'+
+                    '<div class="del_tx">'+
+                    '<lable class="tx_title">提醒时间:</lable>'+
+                    '<input type="text" class="tx_time" id="da" value="'+(obj1.time||"")+'">'+
+                    '<input type="button" class="tx_btn" value="提醒">'+
+                    '</div>'+
+                    '</div>';
+            return $(str)
+        }
+        //更新详细数据
+        function up_detail(index) {
+            $(".tx_btn").on("click",function(ev){
+                ev.preventDefault();
+
+                var obj2={};
+                obj2.content=$(".title h2").text();//与上面的content名保持一致（extend替换）
+                obj2.text=$("textarea").val();
+                obj2.time=$(".tx_time").val();
+                up_data(obj2,index);
+                countDown()();
+                up_data({off:false},index);
+                $(".det").remove();
+                $(".close").remove();
+            })
+        }
+        //双击事件
+        function dbClick() {
+            var $title=$(".title h2");
+            var $titleHide=$("#hide");
+            $title.dblclick(function(){
+                var that=this;
+                $(this).hide();
+                $titleHide.show();
+                $titleHide.focus();
+                $titleHide.blur(function () {
+                    $titleHide.hide();
+                    $(that).show();
+                    if(!$titleHide.val()){
+                        return;
+                    }else{
+                        $(that).text($titleHide.val());
+                        return;
+                    }
+                });
+            });
+        }
+        //更新数据到task_list
+        function up_data(newobj,index){
+            task_list[index]=$.extend({},task_list[index],newobj);
+            store.set("text",task_list);
+            updataList();//替换content，更新li
+        }
+        //checkbox选中
+        function checked(){
+            var $checked=$(".checked");
+            $checked.on("click",function(){
+                var index=$(this).parent().data("index");
+                //task_list[index].falg=false;(不能加，无法取消)
+                if(task_list[index].falg){
+                    //task_list[index].falg=false;
+                    //console.log(task_list[index].falg);
+                    up_data({falg:false},index);
+                }else{
+                    //task_list[index].falg=true;
+                    //console.log(task_list[index].falg);
+                    up_data({falg:true},index);
+                }
+            });
+        }
+        //日期插件
+        function datatime() {
+            $("#da").datetimepicker({
+                lang:"ch", //语言选择中文 注：旧版本 新版方法：$.datetimepicker.setLocale('ch');
+                //format:"Y-m-d",      //格式化日期
+                //timepicker:false,    //关闭时间选项
+                yearStart:2000,     //设置最小年份
+                yearEnd:2050,        //设置最大年份
+                //todayButton:false    //关闭选择今天按钮
+            });
+        }
+        countDown()();
+        function countDown() {
+            //1.获取当前时间
+            //2.获取结束时间
+            var timer=null;
+            return function () {
+                timer=setInterval(function(){
+                    for(var i=0;i<task_list.length;i++){
+                        if(!task_list[i].time||task_list[i].falg||task_list[i].off){
+                            continue;
+                            }
+                        var nowDate=new Date().getTime();
+                        var endDate=(new Date(task_list[i].time)).getTime();
+                        if(endDate-nowDate<1){
+                            up_data({off:true},i);
+                            //播放音乐
+                            musicPaly();
+                            //弹出提示
+                            msgShow(task_list[i].content);
+                            clearInterval(timer);
+
+                        }
+                    }
+                },1000)
+            }
+        }
+        function musicPaly(){
+            var music=document.getElementById("music");
+            music.play();
+        }
+        function msgShow(title){
+            $(".msg").show();
+            $(".msg_content").text(title);
+            $(".msg_know").on("click",function(){
+                $(".msg").hide();
+            });
+            
+        }
+    });
+</script>
+
+

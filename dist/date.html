@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.4/build/jquery.datetimepicker.min.css">
+</head>
+<body>
+<input type="text" id="da">
+<input type="text" class="datetime">
+
+<script type="text/javascript" src="../bower_components/jquery/dist/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.4/build/jquery.datetimepicker.full.js"></script>
+<script>
+    $("#da").datetimepicker({
+        //lang:"ch", //语言选择中文 注：旧版本 新版方法：$.datetimepicker.setLocale('ch');
+        //format:"Y-m-d",      //格式化日期
+        //timepicker:false,    //关闭时间选项
+        yearStart:2000,     //设置最小年份
+        yearEnd:2050,        //设置最大年份
+        //todayButton:false    //关闭选择今天按钮
+    });
+    $.datetimepicker.setLocale('ch');//设置中文
+    $('.datetime').datetimepicker({
+        yearStart:2016,     //设置最小年份
+        yearEnd:2018,        //设置最大年份
+        //timepicker:false,    //关闭时间选项
+    });
+</script>
+</body>
+</html>
